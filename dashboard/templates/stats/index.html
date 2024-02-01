@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+    Статистика
+{% endblock title %}
+{% block css %}
+    <link href="{% static 'assets/plugins/datetimepicker/css/classic.css" rel="stylesheet' %}"/>
+    <link href="{% static 'assets/plugins/datetimepicker/css/classic.time.css" rel="stylesheet' %}"/>
+    <link href="{% static 'assets/plugins/datetimepicker/css/classic.date.css" rel="stylesheet' %}"/>
+    <link href="{% static 'assets/plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.min.css' %}"
+          rel="stylesheet"/>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
+    <style>
+		.stat-name {
+			font-size: 0.5rem;
+		}
+	
+		.stat-body {
+			font-size: 0.825rem;
+		}
+    </style>
+{% endblock css %}
+{% block content %}
+    <div class="page-wrapper">
+        <div class="page-content">
+            <!--breadcrumb-->
+            <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+                <div class="breadcrumb-title pe-3">Панель управления</div>
+                <div class="ps-3">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0 p-0">
+                            <li class="breadcrumb-item">
+                                <a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">Статистика</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+            <!--end breadcrumb-->
+            <div class="row">
+                <div class="col-sm col-xl-4">
+                    <div class="card radius-10">
+                        <div class="card-body">
+                            <p class="mb-2">Фильтры</p>
+                            <div class="d-flex justify-content-center">
+                                {% comment %} <ul class="pagination">
+										<li class="page-item">
+										<a class="page-link" href="/stats?date={{ prev }}{{ filters_string }}" aria-label="Назад">
+											<span aria-hidden="true">&lsaquo;</span>
+										</a>
+										</li>
+										<li class="page-item" disabled><a class="page-link">{{ date }}</a></li>
+										{% if not has_next %}
+										<li class="page-item disabled">
+											<a class="page-link" href="" aria-label="Далее">
+											<span aria-hidden="true">&rsaquo;</span>
+											</a>
+										</li>
+										{% else %}
+										<li class="page-item">
+											<a class="page-link" href="/stats?date={{ next }}{{ filters_string }}" aria-label="Далее">
+											<span aria-hidden="true">&rsaquo;</span>
+											</a>
+										</li>
+										{% endif %}
+                                </ul> {% endcomment %}
+                            </div>
+                            <div class="d-flex justify-content-center">
+                                <form method="get" class="col-9" action="">
+                                    {% comment %} <input type="hidden" name="date" value="{{ date_formatted }}"/> {% endcomment %}
+                                    <div class="input-group mb-2">
+                                        <input class="date form-control"
+                                               type="text"
+                                               id="date"
+                                               name="date_from"
+                                               value="{{ date_from }}"
+                                               placeholder="Выберите дату"/>
+                                        <input class="date form-control"
+                                               type="text"
+                                               id="date"
+                                               name="date_to"
+                                               value="{{ date_to }}"
+                                               placeholder="Выберите дату"/>
+                                    </div>
+                                    <select class="form-select mb-2" name="department" id="department">
+                                        <option value="all">
+                                            Заведение
+                                        </option>
+                                        {% for department in departments %}
+                                            <option value="{{ department }}"{% if department == current_department %} selected{% endif %}>
+                                                {{ department }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <select class="form-select my-2" name="pay_type" id="pay_type">
+                                        <option value="all">
+                                            Тип оплаты
+                                        </option>
+                                        {% for code, name in pay_types %}
+                                            <option value="{{ code }}"{% if code == current_pay_type %} selected{% endif %}>
+                                                {{ name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="d-flex justify-content-center mt-4 mb-2">
+                                        <button class="btn btn-light" type="submit">
+                                            <i class="bx bx-filter-alt me-0"></i> Фильтр
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="row row-cols-2 row-cols-md-2 row-cols-xl-4">
+                        {% for name, value in stats %}
+                            <div class="col">
+                                <div class="card radius-10">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <div>
+                                                <p class="mb-0 stat-name">{{ name }}</p>
+                                                <h6 class="my-1 stat-body">{{ value }}</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <!--end row-->
+        </div>
+    </div>
+{% endblock content %}
+{% block js %}
+    <script src="{% static 'assets/plugins/bootstrap-material-datetimepicker/js/moment.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.min.js' %}"></script>
+    <script>
+		$(function () {
+			$('.date').bootstrapMaterialDatePicker({
+				format: 'DD.MM.YYYY',
+				time: false
+			});
+		});				
+    </script>
+{% endblock js %}

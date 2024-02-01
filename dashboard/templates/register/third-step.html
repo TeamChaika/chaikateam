@@ -1,0 +1,45 @@
+{% extends "register/base.html" %}
+{% block content %}
+<div class="border p-4 rounded">
+    <div class="text-center mb-4">
+        <h4>3. Привязка Telegram</h4>
+        <h6 class="mt-4">Инструкция</h6>
+        <p>
+            <b>1.</b> Перейти по <a href="https://t.me/iikoStats_bot" target="_blank">данной ссылке</a>. Должен открыться Telegram-чат с ботом <b>@iikoStats_bot</b>.<br>
+            <b>2.</b> Запустить бота, далее отправить ему команду <b>/register</b><br>
+            <b>3.</b> Скопировать полученный код в поле, расположенное ниже.<br><br>
+            Данная процедура необязательна. Вы можете завершить процесс регистрации без неё.
+        </p>
+    </div>
+    <div class="form-body">
+        <form action="" class="row g-3" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="step" value="3"/>
+            <div class="col-12">
+                <label class="form-label" for="telegram_id">Код из Telegram</label>
+                <input class="form-control" id="telegram_id" name="telegram_id"
+                        autocomplete="off" placeholder="Код из Telegram" type="text">
+            </div>
+            {% if error_message %}
+            <div class="error_message text-center px-4">{{ error_message }}</div>
+            {% endif %}
+            {% if success_message %}
+            <div class="success_message text-center px-4">{{ success_message }}</div>
+            {% endif %}
+            <div class="col-12">
+                <div class="d-grid">
+                    <button class="btn btn-light" type="submit"><i
+                            class="bx bx-send"></i>Отправить запрос
+                    </button>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="d-grid">
+                    <a class="btn btn-light" href="/login" role="button"><i
+                            class="bx bxs-log-in-circle"></i>Авторизация</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}

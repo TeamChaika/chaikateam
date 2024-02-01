@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+    Отчет – Hungry Bird 2.0
+{% endblock title %}
+{% block css %}
+    <link href="{% static 'assets/plugins/datetimepicker/css/classic.css" rel="stylesheet' %}"/>
+    <link href="{% static 'assets/plugins/datetimepicker/css/classic.time.css" rel="stylesheet' %}"/>
+    <link href="{% static 'assets/plugins/datetimepicker/css/classic.date.css" rel="stylesheet' %}"/>
+    <link href="{% static 'assets/plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.min.css' %}"
+          rel="stylesheet"/>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
+    <style>
+		.stat {
+			font-size: 0.5rem;
+		  }
+	
+    </style>
+{% endblock css %}
+{% block content %}
+    <div class="page-wrapper">
+        <div class="page-content">
+            <!--breadcrumb-->
+            <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+                <div class="breadcrumb-title pe-3">Панель управления</div>
+                <div class="ps-3">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0 p-0">
+                            <li class="breadcrumb-item">
+                                <a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">Hungry Bird 2.0</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+            <!--end breadcrumb-->
+            <div class="d-flex justify-content-center">
+                <form method="get" action="">
+                    <div class="input-group mb-2">
+                        <input class="date form-control"
+                               type="text"
+                               id="date"
+                               name="date_from"
+                               value="{{ date_from }}"
+                               placeholder="Выберите дату"/>
+                        <input class="date form-control"
+                               type="text"
+                               id="date"
+                               name="date_to"
+                               value="{{ date_to }}"
+                               placeholder="Выберите дату"/>
+                        <button class="btn btn-light" type="submit">
+                            <i class="bx bx-show-alt me-0"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="row">
+                <div class="col-xl-9 mx-auto">
+                    <div class="card">
+                        <div class="card-body">
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Наименование</th>
+                                        <th scope="col" class="text-center">Количество</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for row in data %}
+                                        <tr>
+                                            <td>{{ row.name }}</td>
+                                            <td class="text-center">
+                                                {{ row.amount }}
+                                                {% if row.gift %}+ {{ row.gift }}{% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--end row-->
+        </div>
+    </div>
+{% endblock content %}
+{% block js %}
+    <script src="{% static 'assets/plugins/bootstrap-material-datetimepicker/js/moment.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.min.js' %}"></script>
+    <script>
+		$(function () {
+			$('.date').bootstrapMaterialDatePicker({
+				format: 'DD.MM.YYYY',
+				time: false
+			});
+		});						
+    </script>
+{% endblock js %}

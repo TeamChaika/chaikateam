@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+    Список накладных
+{% endblock title %}
+{% block css %}
+<style>
+    input[type="text"]::-webkit-calendar-picker-indicator,
+    input[type="email"]::-webkit-calendar-picker-indicator,
+    input[type="number"]::-webkit-calendar-picker-indicator, 
+    input[type="search"]::-webkit-calendar-picker-indicator {
+        display: none !important;
+    }
+</style>
+{% endblock css %}
+{% block content %}
+    <div class="page-wrapper">
+        <div class="page-content">
+            <!--breadcrumb-->
+            <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+                <div class="breadcrumb-title pe-3">Панель управления</div>
+                <div class="ps-3">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0 p-0">
+                            <li class="breadcrumb-item">
+                                <a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">Накладные</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+            <!--end breadcrumb-->
+            {% if not have_store %}
+                <div class="card radius-10 mt-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-center my-5">
+                            <div class="col-6 text-center">
+                                <h5>
+                                    Вы не подключены к складу.
+                                    <br/>
+                                    Пожалуйста, обратитесь к администратору сайта.
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="card radius-10 mt-4">
+                    <div class="card-body p-4">
+                        <div class="card-title d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <i class="bx bxs-spreadsheet me-1 font-22 text-white"></i>
+                                <h5 class="mb-0 text-white">Список накладных</h5>
+                            </div>
+                            <div class="d-flex alig-items-center justify-content-between col-8 p-0">
+                                <div class="d-flex align-items-center col me-4">
+                                    <form method="GET" action="" class="col">
+                                        <div class="input-group">
+                                            <input class="form-control"
+                                                    type="search"
+                                                    list="nomenclature"
+                                                    name="search"
+                                                    placeholder="Поиск по позициям"
+                                                    {% if search %}value="{{ search }}"{% endif %}
+                                                    autocomplete="off">
+                                            <datalist id="nomenclature">
+                                                {% for product in nomenclature %}<option value="{{ product }}">{% endfor %}
+                                            </datalist>
+                                            <button class="btn btn-light" type="submit">
+                                                <i class="bx bx-search m-0"></i>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <ul class="pagination m-0">
+                                        <li class="page-item{% if type == 'all' %} active{% endif %}">
+                                            <a class="page-link" href="/waybills/">Все</a>
+                                        </li>
+                                        <li class="page-item{% if type == 'incoming' %} active{% endif %}">
+                                            <a class="page-link" href="/waybills/incoming">Входящие</a>
+                                        </li>
+                                        <li class="page-item{% if type == 'outgoing' %} active{% endif %}">
+                                            <a class="page-link" href="/waybills/outgoing">Исходящие</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col">Номер</th>
+                                        <th scope="col">Склад</th>
+                                        <th scope="col">Контрагент</th>
+                                        <th scope="col">Дата и время</th>
+                                        <th scope="col">Статус</th>
+                                        <th scope="col">Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if not waybills %}
+                                        <tr>
+                                            <td colspan="6" class="text-center">Список накладных пуст.</td>
+                                        </tr>
+                                    {% endif %}
+                                    {% for waybill, created_at in waybills %}
+                                        <tr class="align-middle">
+                                            <th scope="row">
+                                                #{{ waybill.id }}
+                                            </td>
+                                            <td>{{ waybill.store.name }}</td>
+                                            <td>{{ waybill.counteragent.name }}</td>
+                                            <td>{{ created_at }}</td>
+                                            <td>
+                                                {% if waybill.status == 'Created' %}
+                                                    В обработке
+                                                {% elif waybill.status == 'Cancelled' %}
+                                                    Отменена
+                                                {% elif waybill.status == 'Sent' %}
+                                                    Создана
+                                                {% elif waybill.status == 'Denied' %}
+                                                    Отклонена
+                                                {% else %}
+                                                    {{ waybill.status }}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="d-flex order-actions">
+                                                    <a href="/waybills/{{ waybill.id }}" target="_blank"><i class="bx bx-show-alt"></i></a>
+                                                    {% if waybill.status == 'Created' and waybill.store.id in stores %}
+                                                        <a href="/waybills/{{ waybill.id }}/edit" target="_blank"
+                                                            class="ms-2"><i class='bx bx-edit'></i></a>
+                                                    {% endif %}
+                                                    {% if waybill.status == 'Created' and waybill.counteragent.id in stores %}
+                                                        <a href="" onclick="return false;" id="confirmWaybill_{{ waybill.id }}"
+                                                        class="ms-2"><i class='bx bx-check'></i></a>
+                                                    {% endif %}
+                                                    {% if waybill.status == 'Created' and waybill.store.id in stores %}
+                                                        <a href="" onclick="return false;" id="cancelWaybill_{{ waybill.id }}"
+                                                        class="ms-2"><i class='bx bx-x'></i></a>
+                                                    {% elif waybill.status == 'Created' and waybill.counteragent.id in stores %}
+                                                        <a href="" onclick="return false;" id="denyWaybill_{{ waybill.id }}"
+                                                        class="ms-2"><i class='bx bx-x'></i></a>
+                                                    {% elif waybill.status == 'Sent' and perms.authentication.is_accountant %}
+                                                        <a href="" onclick="return false;" id="copyWaybill_{{ waybill.id }}"
+                                                        class="ms-2"><i class='bx bx-repeat'></i></a>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% if waybills and pages != 0 %}
+                            <div class="d-flex justify-content-center">
+                                <ul class="pagination">
+                                    {% if page == 1 %}
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="" aria-label="В начало">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="" aria-label="Назад">
+                                                <span aria-hidden="true">&lsaquo;</span>
+                                            </a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ request.path }}{% if search %}?search={{ search }}{% endif %}" aria-label="Назад">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link"
+                                               href="{{ request.path }}/?{% if search %}search={{ search }}&{% endif %}page={{ page|add:"-1" }}"
+                                               aria-label="Назад">
+                                                <span aria-hidden="true">&lsaquo;</span>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                    {% for p in pagination %}
+                                        {% if p == page %}
+                                            <li class="page-item active">
+                                                <a class="page-link" href="">{{ p }}</a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ request.path }}?{% if search %}search={{ search }}&{% endif %}page={{ p }}">{{ p }}</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% if page == pages %}
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="" aria-label="Далее">
+                                                <span aria-hidden="true">&rsaquo;</span>
+                                            </a>
+                                        </li>
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="" aria-label="В конец">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item">
+                                            <a class="page-link"
+                                               href="{{ request.path }}?{% if search %}search={{ search }}&{% endif %}page={{ page|add:"1" }}"
+                                               aria-label="Далее">
+                                                <span aria-hidden="true">&rsaquo;</span>
+                                            </a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link"
+                                               href="{{ request.path }}?{% if search %}search={{ search }}&{% endif %}page={{ pages }}"
+                                               aria-label="В конец">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        <!--end row-->
+    </div>
+{% endblock content %}
+{% block js %}
+<script>
+    var csrfToken = "{{ csrf_token }}";
+
+    $(document).ajaxSuccess(function(){
+        window.location.reload();
+    });
+
+    function sendAction(id, action) {
+        $.ajax({
+            url: `/waybills/${id}/${action}`,
+            type: 'POST',
+            data: {
+                csrfmiddlewaretoken: csrfToken
+            }
+        });
+    }
+    {% if perms.authentication.is_accountant %}
+    $('[id^=copyWaybill]').on('click', function () {
+        sendAction(this.id.split('_')[1], "copy");
+    })
+    {% endif %}{% if type == "all" or type == "outgoing" %}
+    $('[id^=cancelWaybill]').on('click', function () {
+        sendAction(this.id.split('_')[1], "cancel")
+    })
+    {% endif %}{% if type == "all" or type == "incoming" %}
+    $('[id^=confirmWaybill]').on('click', function () {
+        sendAction(this.id.split('_')[1], "confirm")
+    })
+
+    $('[id^=denyWaybill]').on('click', function () {
+        sendAction(this.id.split('_')[1], "deny")
+    })
+    {% endif %}
+</script>
+{% endblock js %}

@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+    Создание списаний
+{% endblock title %}
+{% block css %}
+    <style>
+    .error_message {
+        padding: 0px 0px 0px 0px;
+        font-size: 0.9em;
+        color: #CD4022;
+    }
+
+    .success_message {
+        padding: 0px 0px 0px 0px;
+        text-align: center;
+        font-size: 0.9em;
+        color: #2ead14;
+    }
+
+    input[type="text"]::-webkit-calendar-picker-indicator,
+    input[type="email"]::-webkit-calendar-picker-indicator,
+    input[type="number"]::-webkit-calendar-picker-indicator, 
+    input[type="search"]::-webkit-calendar-picker-indicator {
+        display: none !important;
+    }
+    </style>
+{% endblock css %}
+{% block content %}
+    <div class="page-wrapper">
+        <div class="page-content">
+            <!--breadcrumb-->
+            <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+                <div class="breadcrumb-title pe-3">Панель управления</div>
+                <div class="ps-3">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0 p-0">
+                            <li class="breadcrumb-item">
+                                <a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">Списания</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+            <!--end breadcrumb-->
+            {% if not have_store %}
+                <div class="card radius-10 mt-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-center my-5">
+                            <div class="col-6 text-center">
+                                <h5>
+                                    Вы не подключены к складу.
+                                    <br/>
+                                    Пожалуйста, обратитесь к администратору сайта.
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="card radius-10 mt-4">
+                    <div class="card-body p-4">
+                        <div class="card-title d-flex align-items-center">
+                            <div>
+                                <i class="bx bxs-spreadsheet me-1 font-22 text-white"></i>
+                            </div>
+                            <h5 class="mb-0 text-white">Создание cписания</h5>
+                        </div>
+                        <hr />
+                        <div class="d-flex justify-content-center border border-1 p-4 pt-2 rounded">
+                            <form class="row col-12 g-2 justify-content-center" method="post">
+                                {% csrf_token %}
+                                <h6 class="m-0 mt-4 text-uppercase">Склад</h6>
+                                <div class="col">
+                                    <input type="text"
+                                           class="form-control mb-3"
+                                           name="user_store_name"
+                                           list="user_stores"
+                                           placeholder="Выберите..."
+                                           required/>
+                                    <datalist id="user_stores">
+                                        {% for store in user_stores %}
+                                            <option value="{{ store }}">
+                                            </option>
+                                        {% endfor %}
+                                    </datalist>
+                                </div>
+                                <h6 class="m-0 mt-2 text-uppercase">Причина</h6>
+                                <div class="col">
+                                    <select class="form-select" name="reason" id="reason">
+                                        <option value="">Выберите...</option>
+                                        {% for reason in reasons %}
+                                            <option value="{{ reason.id }}">
+                                                {{ reason.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <h6 class="m-0 mt-4 text-uppercase">Комментарий</h6>
+                                <div class="col">
+                                    <input class="form-control mb-3"
+                                           name="comment"
+                                           placeholder="Необязательное поле"/>
+                                </div>
+                                <hr />
+                                <h6 class="m-0 text-uppercase">Товары</h6>
+                                <div class="col-12">
+                                    <table class="table table-borderless waybill_items p-0">
+                                        <tr>
+                                            <td colspan="3" class="text-center px-0">
+                                                <div class="input-group">
+                                                    <input type="text"
+                                                           class="form-control"
+                                                           list="nomenclature"
+                                                           name="products_names[]"
+                                                           placeholder="Выберите..."
+                                                           autocomplete="off"
+                                                           required/>
+                                                    <datalist id="nomenclature">
+                                                        {% for product in nomenclature %}
+                                                            <option value="{{ product }}">
+                                                            </option>
+                                                        {% endfor %}
+                                                    </datalist>
+                                                    <input type="number"
+                                                           class="form-control"
+                                                           name="products_counts[]"
+                                                           placeholder="Количество"
+                                                           min="0"
+                                                           step="0.0001"
+                                                           autocomplete="off"
+                                                           required/>
+                                                    <span class="btn btn-secondary pull-right d-flex align-items-center" disabled>–</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr class="waybill_item">
+                                            <td class="px-0">
+                                                <span class="btn btn-success plus pull-right">Добавить
+                                                позицию</span>
+                                            </td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                {% if error_message %}
+                                    <div class="d-flex justify-content-center mb-3">
+                                        <div class="col-6 d-flex justify-content-center">
+                                            <div class="w-200 error_message text-center">{{ error_message }}</div>
+                                        </div>
+                                    </div>
+                                {% elif success_message %}
+                                    <div class="d-flex justify-content-center mb-3">
+                                        <div class="col-6 d-flex justify-content-center">
+                                            <div class="w-200 success_message text-center">{{ success_message }}</div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                <button class="btn btn-light mx-1 btn-lg btn-block col-3" type="submit">Создать</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        <!--end row-->
+    </div>
+{% endblock content %}
+{% block js %}
+    <script>
+    // формируем новые поля
+    jQuery('.plus').click(function () {
+        jQuery('.waybill_item').before(
+            '<tr>' +
+            '<td colspan="3" class="text-center px-0"><div class="input-group"><input type="text" class="form-control" list="nomenclature" name="products_names[]" placeholder="Выберите..." autocomplete="off" required>' +
+            '<input type="number" class="form-control" name="products_counts[]" placeholder="Количество" min="0" step="0.01" autocomplete="off" required><span class="btn btn-danger minus pull-right d-flex align-items-center">–</span></div></td>' +
+            '</tr>'
+        );
+    });
+    // on - так как элемент динамически создан и обычный обработчик с ним не работает
+    jQuery(document).on('click', '.minus', function () {
+        jQuery(this).closest('tr').remove(); // удаление строки с полями
+    });
+    </script>
+{% endblock js %}

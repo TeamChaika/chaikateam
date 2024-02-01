@@ -1,0 +1,67 @@
+{% extends "register/base.html" %}
+{% block content %}
+<div class="border p-4 rounded">
+    <div class="text-center mb-4">
+        <h4>1. Данные для входа</h4>
+    </div>
+    <div class="form-body">
+        <form action="" class="row g-3" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="step" value="1"/>
+            <div class="col-12">
+                <label class="form-label" for="username">Номер телефона</label>
+                <input class="form-control" id="username" name="username" autocomplete="off"
+                        placeholder="Номер телефона (без спецсимволов)"
+                        type="text"{% if form.username %} value="{{ form.username }}"{% endif %}>
+            </div>
+            <div class="col-12">
+                <label class="form-label" for="password">Пароль</label>
+                <div class="input-group toggle-password">
+                    <input class="form-control border-end-0" id="password" name="password" autocomplete="off"
+                            placeholder="Пароль" type="password"> <a
+                        class="input-group-text bg-transparent"><i
+                        class='bx bx-hide'></i></a>
+                </div>
+            </div>
+            <div class="col-12">
+                <label class="form-label" for="password_confirm">Повторите пароль</label>
+                <div class="input-group toggle-password">
+                    <input class="form-control border-end-0" id="password_confirm" autocomplete="off"
+                            name="password_confirm"
+                            placeholder="Повторите пароль" type="password"> <a
+                        class="input-group-text bg-transparent"><i
+                        class='bx bx-hide'></i></a>
+                </div>
+            </div>
+            {% if error_message %}
+            <div class="error_message text-center px-4">{{ error_message }}</div>
+            {% endif %}
+            {% if success_message %}
+            <div class="success_message text-center px-4">{{ success_message }}</div>
+            {% endif %}
+            <div class="col-12">
+                <div class="d-grid">
+                    <button class="btn btn-light" type="submit"><i
+                            class="bx bx-fast-forward"></i>Далее
+                    </button>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="d-grid">
+                    <a class="btn btn-light" href="/login" role="button"><i
+                            class="bx bxs-log-in-circle"></i>Авторизация</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}  
+{% block scripts %}                      
+<script>
+    $('.toggle-password a').click(function(){
+        $(this).children().toggleClass('bx-show bx-hide')
+        let input = $(this).prev()
+        input.attr('type', input.attr('type') === 'password' ? 'text' : 'password');
+    })
+</script>
+{% endblock scripts %}

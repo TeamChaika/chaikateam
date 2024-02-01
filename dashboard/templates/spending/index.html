@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block title %}
+    Добавить расходы
+{% endblock title %}
+{% block css %}
+    <style>
+	.error_message {
+        padding: 0px 0px 0px 0px;
+        font-size: 0.75em;
+        color: #CD4022;
+    }
+
+	.success_message {
+		padding: 10px 0px 0px 0px;
+		text-align: center;
+		font-size: 0.75em;
+		color: #2ead14;
+	}
+    </style>
+{% endblock css %}
+{% block content %}
+    <div class="page-wrapper">
+        <div class="page-content">
+            <!--breadcrumb-->
+            <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+                <div class="breadcrumb-title pe-3">Расходы</div>
+                <div class="ps-3">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0 p-0">
+                            <li class="breadcrumb-item">
+                                <a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">Добавить</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+            <!--end breadcrumb-->
+            <div class="d-flex justify-content-center mt-5">
+                <div class="card col-12">
+                    <div class="card-body">
+                        <div class="border p-4 rounded">
+                            {% if not have_department %}
+                                <div class="d-flex justify-content-center my-5">
+                                    <div class="col-6 text-center">
+                                        <h5>
+                                            Вы не подключены к заведению.
+                                            <br/>
+                                            Пожалуйста, обратитесь к администратору
+                                            сайта.
+                                        </h5>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="form-body">
+                                    <form method="post" action="">
+                                        {% csrf_token %}
+                                        <div class="form-group row mt-3 mx-2 justify-content-center">
+                                            <div class="col-sm-6">
+                                                <label for="category">Категория расхода</label>
+                                                <select class="form-select" name="category" id="category">
+                                                    {% for category in categories %}
+                                                        <option value="{{ category.id }}">
+                                                            {{ category.name }}
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row mt-3 mx-2 justify-content-center">
+                                            <div class="col-sm-6">
+                                                <label for="name">Наименование расхода</label>
+                                                <input type="text"
+                                                       class="form-control"
+                                                       id="name"
+                                                       name="name"
+                                                       autocomplete="off"
+                                                       maxlength="128"
+                                                       required/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row mt-2 mx-2 mb-1 justify-content-center">
+                                            <div class="col-sm-6">
+                                                <label for="name">Сумма</label>
+                                                <input type="number"
+                                                       class="form-control"
+                                                       id="amount"
+                                                       name="amount"
+                                                       autocomplete="off"
+                                                       maxlength="64"
+                                                       required/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row mt-3 mx-2 justify-content-center">
+                                            <div class="col-sm-6">
+                                                <label for="category">Согласовано</label>
+                                                <select class="form-select" name="agreed" id="agreed">
+                                                    {% for agreed_ in agreed %}
+                                                        <option value="{{ agreed_.id }}">
+                                                            {{ agreed_.name }}
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        {% if error_message %}
+                                            <div class="d-flex justify-content-center">
+                                                <div class="col-6 d-flex justify-content-center">
+                                                    <div class="w-100 error_message text-center">{{ error_message }}</div>
+                                                </div>
+                                            </div>
+                                        {% elif success_message %}
+                                            <div class="d-flex justify-content-center">
+                                                <div class="col-6 d-flex justify-content-center">
+                                                    <div class="w-100 success_message text-center">{{ success_message }}</div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        <div class="d-flex justify-content-center mt-3">
+                                            <button class="btn btn-light mx-1 btn-block" type="submit">Создать</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--end row-->
+        </div>
+    </div>
+{% endblock content %}

@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+    Чайка на пляже
+{% endblock title %}
+{% block css %}
+    <link href="{% static 'assets/plugins/datetimepicker/css/classic.css" rel="stylesheet' %}"/>
+    <link href="{% static 'assets/plugins/datetimepicker/css/classic.time.css" rel="stylesheet' %}"/>
+    <link href="{% static 'assets/plugins/datetimepicker/css/classic.date.css" rel="stylesheet' %}"/>
+    <link href="{% static 'assets/plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.min.css' %}"
+          rel="stylesheet"/>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
+{% endblock css %}
+{% block content %}
+    <div class="page-wrapper">
+        <div class="page-content">
+            <!--breadcrumb-->
+            <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+                <div class="breadcrumb-title pe-3">Панель управления</div>
+                <div class="ps-3">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0 p-0">
+                            <li class="breadcrumb-item">
+                                <a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">Чайка на пляже</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+            <!--end breadcrumb-->
+            <div class="row">
+                <div class="d-flex justify-content-center mb-4">
+                    <form method="get" action="">
+                        <div class="input-group mb-2">
+                            <input class="date form-control"
+                                   type="text"
+                                   id="date"
+                                   name="date_from"
+                                   value="{{ date_from }}"
+                                   placeholder="Выберите дату"/>
+                            <input class="date form-control"
+                                   type="text"
+                                   id="date"
+                                   name="date_to"
+                                   value="{{ date_to }}"
+                                   placeholder="Выберите дату"/>
+                            <button class="btn btn-light" type="submit">
+                                <i class="bx bx-show-alt me-0"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-xl-2">
+                    {% for cashbox_name, cashbox_data in cashboxes %}
+                        <div class="col">
+                            <div class="card radius-10">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <div>
+                                            <p class="mb-0">{{ cashbox_name }}</p>
+                                            <h6 class="mt-2">Наличные – {{ cashbox_data.CashSum }}</h6>
+                                            <h6 class="mb-0">Безнал – {{ cashbox_data.CashLessSum }}</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <!--end row-->
+        </div>
+    </div>
+{% endblock content %}
+{% block js %}
+    <script src="{% static 'assets/plugins/bootstrap-material-datetimepicker/js/moment.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.min.js' %}"></script>
+    <script>
+	$(function () {
+		$('.date').bootstrapMaterialDatePicker({
+			format: 'DD.MM.YYYY',
+			time: false
+		});
+	});
+    </script>
+{% endblock js %}

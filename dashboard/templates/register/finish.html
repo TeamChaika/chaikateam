@@ -1,0 +1,16 @@
+{% extends "register/base.html" %}
+{% block content %}
+<div class="border p-4 rounded">
+    <div class="text-center mb-4">
+        <h4>Завершено</h4>
+        <p class="mt-4">
+            Запрос на регистрацию успешно отправлен!
+            Пожалуйста, ожидайте подтверждения.
+        </p>
+        <div class="d-flex justify-content-center mt-2">
+            <a class="col-9 btn btn-light" href="/login" role="button"><i
+                    class="bx bxs-log-in-circle"></i>Авторизация</a>
+        </div>
+    </div>
+</div>
+{% endblock content %}

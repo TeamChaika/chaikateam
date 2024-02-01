@@ -1,0 +1,40 @@
+{% extends "register/base.html" %}
+{% block content %}
+<div class="border p-4 rounded">
+    <div class="text-center mb-4">
+        <h4>2. Выбор заведения</h4>
+    </div>
+    <div class="form-body">
+        <form action="" class="row g-3" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="step" value="2"/>
+            <div class="col-12">
+                <label class="form-label" for="department">Заведение</label>
+                <select class="form-select" id="department" name="department">
+                    <option value="">Не выбрано</option>
+                    {% for department in departments %}<option>{{ department }}</option>{% endfor %}
+                </select>
+            </div>
+            {% if error_message %}
+            <div class="error_message text-center px-4">{{ error_message }}</div>
+            {% endif %}
+            {% if success_message %}
+            <div class="success_message text-center px-4">{{ success_message }}</div>
+            {% endif %}
+            <div class="col-12">
+                <div class="d-grid">
+                    <button class="btn btn-light" type="submit"><i
+                            class="bx bx-fast-forward"></i>Далее
+                    </button>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="d-grid">
+                    <a class="btn btn-light" href="/login" role="button"><i
+                            class="bx bxs-log-in-circle"></i>Авторизация</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}
